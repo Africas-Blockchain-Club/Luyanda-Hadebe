@@ -152,7 +152,7 @@ function App() {
       border: "1px solid #334155"
     }}>
       <h1 style={{ margin: "0 0 8px 0", fontSize: "28px", fontWeight: "800" }}>
-        Eth <span style={{ color: "#38bdf8" }}>Pool</span>
+        Ama <span style={{ color: "#38bdf8" }}>MILLION!</span>
       </h1>
       <p style={{ color: "#94a3b8", marginBottom: "32px", fontSize: "14px" }}>
         {account ? `Connected: ${account.address.slice(0,6)}...${account.address.slice(-4)}` : "Connect your wallet to start"}
