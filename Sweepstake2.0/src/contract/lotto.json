@@ -1,5 +1,12 @@
 [
 	{
+		"inputs": [],
+		"name": "acceptOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint8[7]",
@@ -15,14 +22,22 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint64",
-				"name": "subscriptionId",
-				"type": "uint64"
-			},
-			{
 				"internalType": "address",
-				"name": "vrfCoordinator",
+				"name": "_vrfCoordinator",
 				"type": "address"
+			}
+		],
+		"name": "setCoordinator",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "subscriptionId",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -45,16 +60,80 @@
 		"type": "error"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "have",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "coordinator",
+				"type": "address"
+			}
+		],
+		"name": "OnlyOwnerOrCoordinator",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ZeroAddress",
+		"type": "error"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint256",
-				"name": "requestId",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "vrfCoordinator",
+				"type": "address"
 			}
 		],
-		"name": "DrawRequested",
+		"name": "CoordinatorSet",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferRequested",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
 		"type": "event"
 	},
 	{
@@ -86,29 +165,61 @@
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "roundId",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint8[7]",
-				"name": "winningNumbers",
+				"name": "numbers",
 				"type": "uint8[7]"
 			}
 		],
-		"name": "RoundFinalized",
+		"name": "TicketPurchased",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_newId",
+				"type": "uint256"
+			}
+		],
+		"name": "updateSubscriptionId",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "roundId",
+				"type": "uint256"
 			},
 			{
 				"indexed": false,
@@ -119,11 +230,11 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "roundId",
+				"name": "prizePool",
 				"type": "uint256"
 			}
 		],
-		"name": "TicketPurchased",
+		"name": "WinningNumbersPick",
 		"type": "event"
 	},
 	{
@@ -212,6 +323,32 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_subscriptionId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_vrfCoordinator",
+		"outputs": [
+			{
+				"internalType": "contract IVRFCoordinatorV2Plus",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",

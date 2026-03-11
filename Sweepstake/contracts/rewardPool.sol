@@ -7,8 +7,8 @@ contract EthRewardPool is ReentrancyGuard {
     address public owner;
     uint256 public roundId;
     uint256 public roundStart;
-    uint256 public constant ROUND_DURATION = 10 minutes;
-    uint256 public constant MIN_CONTRIBUTION = 0.01 ether;
+    uint256 public ROUND_DURATION = 10 minutes;
+    uint256 public MIN_CONTRIBUTION = 0.00001 ether;
 
     address payable[] public participants;
     mapping(address => bool) public hasJoined;
@@ -18,6 +18,11 @@ contract EthRewardPool is ReentrancyGuard {
     event RewardDistributed(address indexed recipient, uint256 amount, uint256 roundId);
     event NewRoundStarted(uint256 roundId);
 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
     constructor() {
         owner = msg.sender;
         roundId = 1;
@@ -25,14 +30,27 @@ contract EthRewardPool is ReentrancyGuard {
         emit NewRoundStarted(roundId);
     }
 
-    modifier roundOpen() {
-        require(block.timestamp < roundStart + ROUND_DURATION, "Round closed");
-        _;
+    
+    function _startNewRound() internal {
+        for (uint256 i = 0; i < participants.length; i++) {
+            hasJoined[participants[i]] = false;
+        }
+        delete participants;
+
+        roundStart = block.timestamp;
+        roundId++;
+
+        emit NewRoundStarted(roundId);
     }
 
-    function joinPool() external payable roundOpen nonReentrant {
+    
+    function joinPool() external payable nonReentrant {
+        if (block.timestamp >= roundStart + ROUND_DURATION) {
+            _startNewRound();
+        }
+
         require(!hasJoined[msg.sender], "Already joined this round");
-        require(msg.value >= MIN_CONTRIBUTION, "Minimum contribution is 0.01 ETH");
+        require(msg.value >= MIN_CONTRIBUTION, "Minimum contribution is 0.00001 ETH");
 
         participants.push(payable(msg.sender));
         hasJoined[msg.sender] = true;
@@ -48,9 +66,12 @@ contract EthRewardPool is ReentrancyGuard {
         return address(this).balance;
     }
 
-    /// ⚠️ Pseudo-randomness for testing/school project only
     function _random() internal view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.prevrandao, participants.length, roundId)));
+        return uint256(
+            keccak256(
+                abi.encodePacked(block.prevrandao, participants.length, roundId)
+            )
+        );
     }
 
     function distributeReward() external nonReentrant {
